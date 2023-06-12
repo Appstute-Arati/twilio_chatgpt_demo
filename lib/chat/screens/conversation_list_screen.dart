@@ -49,46 +49,62 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(
                   onTap: () {},
-                  child: Card(
-                    child: ListTile(
-                      title: Text(
-                          widget.conversationList[index]["conversationName"]),
-                      subtitle: Text(widget.conversationList[index]["sid"]),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return DialogWithEditText(
-                                      onPressed: (enteredText) {
-                                        conversationName =
-                                            widget.conversationList[index]
-                                                ["conversationName"];
-                                        conversationSid = widget
-                                            .conversationList[index]["sid"];
-                                        chatBloc!.add(AddParticipantEvent(
-                                            participantName: enteredText,
-                                            conversationName:
-                                                widget.conversationList[index]
-                                                    ["sid"]));
-                                        Navigator.of(context).pop();
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              icon: const Icon(Icons.add)),
-                          IconButton(
-                              onPressed: () {
-                                chatBloc!.add(JoinConversionEvent(
-                                    conversationName:
-                                        widget.conversationList[index]["sid"]));
-                              },
-                              icon: const Icon(Icons.join_full)),
-                        ],
+                  child: Padding(
+                    padding: EdgeInsets.all(0.5),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      color: Color(0xffADB6D8),
+                      elevation: 10,
+                      child: ListTile(
+                        title: Text(
+                          widget.conversationList[index]["conversationName"],
+                          style: const TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          widget.conversationList[index]["sid"],
+                          style: const TextStyle(fontSize: 12.0),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return DialogWithEditText(
+                                        onPressed: (enteredText) {
+                                          conversationName =
+                                              widget.conversationList[index]
+                                                  ["conversationName"];
+                                          conversationSid = widget
+                                              .conversationList[index]["sid"];
+                                          chatBloc!.add(AddParticipantEvent(
+                                              participantName: enteredText,
+                                              conversationName:
+                                                  widget.conversationList[index]
+                                                      ["sid"]));
+                                          Navigator.of(context).pop();
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.add,
+                                )),
+                            IconButton(
+                                onPressed: () {
+                                  chatBloc!.add(JoinConversionEvent(
+                                      conversationName: widget
+                                          .conversationList[index]["sid"]));
+                                },
+                                icon: const Icon(Icons.join_full)),
+                          ],
+                        ),
                       ),
                     ),
                   ),

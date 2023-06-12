@@ -1,5 +1,6 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BubbleWidget extends StatelessWidget {
   final Map messageMap;
@@ -47,9 +48,7 @@ class BubbleWidget extends StatelessWidget {
                     padding: EdgeInsets.only(
                         top: MediaQuery.of(context).size.width * .015,
                         right: MediaQuery.of(context).size.width * .01),
-                    child: Text(
-                        getFormattedTime(
-                            context, DateTime.now().millisecondsSinceEpoch),
+                    child: Text(getDate(messageMap["dateCreated"]),
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.end,
                         maxLines: 1,
@@ -67,5 +66,21 @@ class BubbleWidget extends StatelessWidget {
   String getFormattedTime(BuildContext context, int timestamp) {
     final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
     return TimeOfDay.fromDateTime(date).format(context);
+  }
+
+  String getDate(String utcDateTimeString) {
+    // String utcDateTimeString = '2023-06-12T11:45:17.123Z';
+
+    DateTime utcDateTime = DateTime.parse(utcDateTimeString);
+
+    // Convert UTC DateTime to IST DateTime
+    DateTime istDateTime = utcDateTime.toLocal();
+
+    // Format the IST DateTime as desired
+    String formattedDateTime =
+        DateFormat('dd/MM/yyyy hh:mm a').format(istDateTime);
+
+    print(formattedDateTime);
+    return formattedDateTime;
   }
 }
