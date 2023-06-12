@@ -13,7 +13,9 @@ class GenerateTokenEvent extends ChatEvents {
 // CreateConversion
 class CreateConversionEvent extends ChatEvents {
   final String conversationName;
-  CreateConversionEvent({required this.conversationName});
+  final String? identity;
+  CreateConversionEvent(
+      {required this.conversationName, required this.identity});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -21,8 +23,8 @@ class CreateConversionEvent extends ChatEvents {
 
 // JoinConversion
 class JoinConversionEvent extends ChatEvents {
-  final Map inputMap;
-  JoinConversionEvent({required this.inputMap});
+  final String conversationName;
+  JoinConversionEvent({required this.conversationName});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -30,8 +32,10 @@ class JoinConversionEvent extends ChatEvents {
 
 //SendMessage
 class SendMessageEvent extends ChatEvents {
-  final Map inputMap;
-  SendMessageEvent({required this.inputMap});
+  final String? enteredMessage;
+  final String? conversationName;
+  SendMessageEvent(
+      {required this.enteredMessage, required this.conversationName});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -48,8 +52,18 @@ class ReceiveMessageEvent extends ChatEvents {
 
 //AddParticipant
 class AddParticipantEvent extends ChatEvents {
-  final Map inputMap;
-  AddParticipantEvent({required this.inputMap});
+  final String participantName;
+  final String conversationName;
+  AddParticipantEvent(
+      {required this.participantName, required this.conversationName});
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+//AddParticipant
+class SeeMyConversationsEvent extends ChatEvents {
+  SeeMyConversationsEvent();
 
   @override
   List<Object?> get props => throw UnimplementedError();

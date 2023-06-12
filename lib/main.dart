@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_bloc.dart';
 import 'package:twilio_chatgpt/chat/repository/chat_repository.dart';
-import 'package:twilio_chatgpt/chat/screens/chat_screen.dart';
+import 'package:twilio_chatgpt/chat/screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
         create: (context) => ChatBloc(
           chatRepository: ChatRepositoryImpl(),
         ),
-        child: const ChatScreen(),
+        child: const Homescreen(),
       ),
     );
   }

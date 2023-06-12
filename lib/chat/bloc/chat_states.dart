@@ -15,8 +15,8 @@ class GenerateTokenLoadingState extends ChatStates {
 
 // GenerateTokenLoadedState
 class GenerateTokenLoadedState extends ChatStates {
-  final Map inputMap;
-  GenerateTokenLoadedState({required this.inputMap});
+  final String token;
+  GenerateTokenLoadedState({required this.token});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -63,8 +63,8 @@ class JoinConversionLoadingState extends ChatStates {
 
 // JoinConversionLoadedState
 class JoinConversionLoadedState extends ChatStates {
-  final Map inputMap;
-  JoinConversionLoadedState({required this.inputMap});
+  final String result;
+  JoinConversionLoadedState({required this.result});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -87,8 +87,8 @@ class SendMessageLoadingState extends ChatStates {
 
 // SendMessageLoadedState
 class SendMessageLoadedState extends ChatStates {
-  final Map inputMap;
-  SendMessageLoadedState({required this.inputMap});
+  final String status;
+  SendMessageLoadedState({required this.status});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -135,8 +135,8 @@ class AddParticipantLoadingState extends ChatStates {
 
 // AddParticipantLoadedState
 class AddParticipantLoadedState extends ChatStates {
-  final Map inputMap;
-  AddParticipantLoadedState({required this.inputMap});
+  final String addedStatus;
+  AddParticipantLoadedState({required this.addedStatus});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -146,6 +146,30 @@ class AddParticipantLoadedState extends ChatStates {
 class AddParticipantErrorState extends ChatStates {
   final String message;
   AddParticipantErrorState({required this.message});
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+// SeeMyConversationsLoadingState
+class SeeMyConversationsLoadingState extends ChatStates {
+  @override
+  List<Object?> get props => [];
+}
+
+// AddParticipantLoadedState
+class SeeMyConversationsLoadedState extends ChatStates {
+  final List conversationList;
+  SeeMyConversationsLoadedState({required this.conversationList});
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+// SeeMyConversationsErrorState
+class SeeMyConversationsErrorState extends ChatStates {
+  final String message;
+  SeeMyConversationsErrorState({required this.message});
 
   @override
   List<Object?> get props => throw UnimplementedError();

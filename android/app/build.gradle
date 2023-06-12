@@ -64,7 +64,10 @@ flutter {
 
 dependencies {
     implementation 'com.twilio:conversations-android:5.1.1'
-    implementation 'com.twilio.sdk:twilio:8.20.0'
+    implementation 'com.twilio.sdk:twilio:9.6.0'
+
+
+
     //implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
    // implementation files('libs/twilio-conversations-android-5.1.1.aar')
     implementation 'com.google.firebase:protolite-well-known-types:18.0.0'
