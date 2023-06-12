@@ -6,6 +6,8 @@ import 'package:twilio_chatgpt/chat/bloc/chat_events.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_states.dart';
 import 'package:twilio_chatgpt/chat/common/providers/chats_provider.dart';
 import 'package:twilio_chatgpt/chat/common/providers/models_provider.dart';
+import 'package:twilio_chatgpt/chat/common/widgets/bubble_widget.dart';
+import 'package:twilio_chatgpt/chat/common/widgets/chat_text_widget.dart';
 
 class ChatDetailsScreen extends StatefulWidget {
   final String conversationName;
@@ -25,7 +27,11 @@ class ChatDetailsScreen extends StatefulWidget {
 class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
   ChatBloc? chatBloc;
 
-  String? typeMessage;
+  final msgController = TextEditingController();
+
+  bool? isFromChatGpt = false;
+
+  String typeMessages = "";
 
   @override
   void initState() {
@@ -50,109 +56,55 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
             builder: (BuildContext context, ChatStates state) {
           if (state is ReceiveMessageLoadedState) {
             return Center(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      //reverse: true, // Display messages from bottom to top
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                        child: ListView.separated(
                       itemCount: state.messagesList.length,
-                      itemBuilder: (BuildContext context, int index) {
+                      //reverse: true,
+                      shrinkWrap: true,
+                      physics: const ClampingScrollPhysics(),
+                      itemBuilder: (context, index) {
                         final message = state.messagesList[index];
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment:
-                              (message['author'] == widget.identity)
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start,
-                          children: [
-                            // ListTile(
-                            //   title: Text(message['author']),
-                            //   subtitle: Text(message['body']),
-                            // )
-                            Padding(
-                              padding: const EdgeInsets.all(0.5),
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                color: (message['author'] == widget.identity)
-                                    ? Colors.lightBlue
-                                    : Colors.grey,
-                                margin: EdgeInsets.zero,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.05,
-                                          padding: const EdgeInsets.all(0.5),
-                                          child: Text(message['author'],
-                                              style: const TextStyle(
-                                                  fontSize: 14.0,
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                      Container(
-                                          padding: const EdgeInsets.all(0.5),
-                                          child: Text(message['body'],
-                                              style: const TextStyle(
-                                                  fontSize: 12.0,
-                                                  fontWeight:
-                                                      FontWeight.normal)))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.width * 0.02,
-                            )
-                          ],
-                        );
+                        // print(message['attributes']);
+                        // print(message['author']);
+                        var isMe = (message['author'] == widget.identity &&
+                                message['attributes'] != "true")
+                            ? true
+                            : false;
+                        return BubbleWidget(messageMap: message, isMe: isMe);
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          Padding(padding: EdgeInsets.only(bottom: 4)),
+                    )),
+                    ChatTextWidget(
+                      hintText: "Type here..",
+                      msgController: msgController,
+                      haveValidation: true,
+                      onSend: (typeMessage) {
+                        List<String>? substrings = typeMessage.split(",");
+                        if (substrings[0].contains("ChatGPT")) {
+                          chatBloc!.add(SendMessageEvent(
+                              enteredMessage: typeMessage,
+                              conversationName: widget.conversationSid,
+                              isFromChatGpt: false));
+                          chatBloc!.add(SendMessageToChatGptEvent(
+                              modelsProvider: modelsProvider,
+                              chatProvider: chatProvider,
+                              typeMessage: typeMessages));
+                        } else {
+                          chatBloc!.add(SendMessageEvent(
+                              enteredMessage: typeMessage,
+                              conversationName: widget.conversationSid,
+                              isFromChatGpt: false));
+                        }
                       },
                     ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            onChanged: (value) {
-                              typeMessage = value;
-                            },
-                            decoration: const InputDecoration(
-                              hintText: 'Type a message',
-                            ),
-                            // Handle user input
-                            // You can store the input in a variable or send it to the server
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.send),
-                          onPressed: () async {
-                            List<String>? substrings = typeMessage?.split(",");
-                            if (substrings![0].contains("ChatGPT")) {
-                              chatBloc!.add(SendMessageToChatGptEvent(
-                                  modelsProvider: modelsProvider,
-                                  chatProvider: chatProvider,
-                                  typeMessage: typeMessage!));
-                            } else {
-                              chatBloc!.add(SendMessageEvent(
-                                  enteredMessage: typeMessage,
-                                  conversationName: widget.conversationSid));
-                            }
-                            // Handle send button press
-                            // You can send the message to the server or add it to the UI
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           } else {
@@ -163,6 +115,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
             // ProgressBar.show(context);
           }
           if (state is SendMessageLoadedState) {
+            msgController.text = "";
             chatBloc!.add(
                 ReceiveMessageEvent(conversationName: widget.conversationSid));
           }
@@ -175,7 +128,8 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
             print(state.chatGptListList[1].msg);
             chatBloc!.add(SendMessageEvent(
                 enteredMessage: state.chatGptListList[1].msg,
-                conversationName: widget.conversationSid));
+                conversationName: widget.conversationSid,
+                isFromChatGpt: true));
           }
         }));
   }

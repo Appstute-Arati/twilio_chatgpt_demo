@@ -57,7 +57,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatStates> {
       emit(SendMessageLoadingState());
       try {
         String result = await chatRepository.sendMessage(
-            event.enteredMessage, event.conversationName);
+            event.enteredMessage, event.conversationName, event.isFromChatGpt);
         emit(SendMessageLoadedState(status: result));
       } catch (e) {
         emit(SendMessageErrorState(message: e.toString()));

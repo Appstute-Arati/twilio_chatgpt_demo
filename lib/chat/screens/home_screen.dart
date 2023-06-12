@@ -61,7 +61,6 @@ class _HomescreenState extends State<Homescreen> {
                 SizedBox(height: MediaQuery.of(context).size.width * 0.10),
                 ElevatedButton(
                     onPressed: () {
-                      print("onPressedd" + "-" + identity.toString());
                       chatBloc!.add(GenerateTokenEvent(credentials: {
                         "accountSid": "AC7dac7823ccc631c5121146db333132f4",
                         "apiKey": "SKf09f0de93c7a51e090f69df13a524ec5",

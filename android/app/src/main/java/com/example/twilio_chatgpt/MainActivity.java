@@ -7,6 +7,7 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
+import com.twilio.conversations.Attributes;
 import com.twilio.conversations.CallbackListener;
 import com.twilio.conversations.Conversation;
 import com.twilio.conversations.ConversationListener;
@@ -75,7 +76,7 @@ public class MainActivity extends FlutterActivity {
                           }
                           if(Objects.equals(call.method, "sendMessage")){
                               sendMessageResult = new MethodResultWrapper(result);
-                              sendMessages(call.argument("enteredMessage"),call.argument("conversationName"));
+                              sendMessages(call.argument("enteredMessage"),call.argument("conversationName"),call.argument("isFromChatGpt"));
                           }
                           if(Objects.equals(call.method, "joinConversation")){
                              String joinStatus =  joinConversation(call.argument("conversationName"));
@@ -242,7 +243,7 @@ public class MainActivity extends FlutterActivity {
        return conversationName;
     }
 
-    public String sendMessages(String enteredMessage,String conversationName){
+    public String sendMessages(String enteredMessage,String conversationName,boolean isFromChatGpt){
 
         conversationClient.getConversation(conversationName,new CallbackListener<Conversation>(){
 
@@ -250,7 +251,9 @@ public class MainActivity extends FlutterActivity {
             public void onSuccess(Conversation result) {
                 // Join the conversation with the given participant identity
                 System.out.println("enteredMessage-" + result.getUniqueName());
+                Attributes attributes = new Attributes(isFromChatGpt);
                 result.prepareMessage()
+                        .setAttributes(attributes)
                         .setBody(enteredMessage)
                         .buildAndSend(new CallbackListener() {
 
@@ -402,9 +405,14 @@ public class MainActivity extends FlutterActivity {
                             messagesMap.put("sid",messagesList.get(i).getSid());
                             messagesMap.put("author",messagesList.get(i).getAuthor());
                             messagesMap.put("body",messagesList.get(i).getBody());
+                            messagesMap.put("attributes",messagesList.get(i).getAttributes().toString());
+                            messagesMap.put("dateCreated",messagesList.get(i).getDateCreated());
+                            System.out.println("messagesMap-"+messagesList.get(i).getDateCreated());
+
                             list.add(messagesMap);
 
                         }
+                        System.out.println(list);
                         messageListResult.success(list);
                     }
 

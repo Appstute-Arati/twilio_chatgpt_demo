@@ -7,7 +7,7 @@ abstract class ChatRepository {
   Future<String> generateToken(credentials);
   Future<String> createConversation(conversationName, identity);
   Future<String> joinConversation(conversationName);
-  Future<String> sendMessage(enteredMessage, conversationName);
+  Future<String> sendMessage(enteredMessage, conversationName, isFromGhatGpt);
   receiveMessage();
   addParticipant(participantName, conversationName);
   Future<List> seeMyConversations();
@@ -93,12 +93,14 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<String> sendMessage(enteredMessage, conversationName) async {
+  Future<String> sendMessage(
+      enteredMessage, conversationName, isFromChatGpt) async {
     String response;
     try {
       final String result = await platform.invokeMethod('sendMessage', {
         "enteredMessage": enteredMessage,
-        "conversationName": conversationName
+        "conversationName": conversationName,
+        "isFromChatGpt": isFromChatGpt
       });
       response = result;
       return response;

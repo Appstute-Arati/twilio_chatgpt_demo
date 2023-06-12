@@ -36,8 +36,11 @@ class JoinConversionEvent extends ChatEvents {
 class SendMessageEvent extends ChatEvents {
   final String? enteredMessage;
   final String? conversationName;
+  final bool? isFromChatGpt;
   SendMessageEvent(
-      {required this.enteredMessage, required this.conversationName});
+      {required this.enteredMessage,
+      required this.conversationName,
+      required this.isFromChatGpt});
 
   @override
   List<Object?> get props => throw UnimplementedError();
