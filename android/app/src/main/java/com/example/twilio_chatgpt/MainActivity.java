@@ -2,6 +2,9 @@ package com.example.twilio_chatgpt;
 
 import static com.twilio.conversations.ConversationsClient.*;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.NonNull;
 
 import com.twilio.conversations.CallbackListener;
@@ -41,6 +44,14 @@ public class MainActivity extends FlutterActivity {
     private static String generateAccessToken;
     private ConversationsClient conversationClient;
     private Conversation conversation;
+    private MethodChannel.Result messageListResult;
+    private MethodChannel.Result sendMessageResult;
+    private MethodChannel.Result addParticipantResult;
+    private MethodChannel.Result createConversationResult;
+
+
+
+
 
 
     @Override
@@ -49,6 +60,8 @@ public class MainActivity extends FlutterActivity {
 
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL).setMethodCallHandler(
                       (call, result) -> {
+
+
                           System.out.println("MethodChannel");
                           if(Objects.equals(call.method,"generateToken")){
                               String accessToken = generateAccessToken(call.argument("accountSid"),call.argument("apiKey"),call.argument("apiSecret"),call.argument("identity"));
@@ -57,10 +70,11 @@ public class MainActivity extends FlutterActivity {
                               result.success(accessToken);
                           }
                           if(Objects.equals(call.method, "createConversation")){
-                               createConversation(call.argument("conversationName"),call.argument("identity"));
-
+                              createConversationResult = new MethodResultWrapper(result);
+                              createConversation(call.argument("conversationName"),call.argument("identity"));
                           }
                           if(Objects.equals(call.method, "sendMessage")){
+                              sendMessageResult = new MethodResultWrapper(result);
                               sendMessages(call.argument("enteredMessage"),call.argument("conversationName"));
                           }
                           if(Objects.equals(call.method, "joinConversation")){
@@ -68,14 +82,19 @@ public class MainActivity extends FlutterActivity {
                              result.success(joinStatus);
                           }
                           if(Objects.equals(call.method, "addParticipant")){
+                              addParticipantResult = new MethodResultWrapper(result);
                               String addedStatus =  addParticipant(call.argument("participantName"),call.argument("conversationName"));
-                              result.success(addedStatus);
+                              //result.success(addedStatus);
                           }
                           if(Objects.equals(call.method, "seeMyConversations")){
                               // joinConversation();
                               List<Map<String, Object>> conversationList = getConversationsList();
                             System.out.println("conversationList"+conversationList.toString());
                             result.success(conversationList);
+                          }
+                          if(Objects.equals(call.method,"getMessages")){
+                              messageListResult = new MethodResultWrapper(result);
+                              getAllMessages(call.argument("conversationName"));
                           }
 
 
@@ -131,22 +150,25 @@ public class MainActivity extends FlutterActivity {
 
 
 
-   void createConversation(String conversationName,String identity){
+    public String createConversation(String conversationName,String identity) {
         conversationClient.createConversation(conversationName, new CallbackListener<Conversation>() {
 
-           @Override
-           public void onSuccess(Conversation result) {
-               System.out.println("client11-" + result.getSid());
-               conversation = result;
-              String added =  addParticipant(identity,conversationName);
-           }
+            @Override
+            public void onSuccess(Conversation result) {
+                System.out.println("client11-" + result.getSid());
+                conversation = result;
+                createConversationResult.success("Created Conversation Successgully");
+                String added = addParticipant(identity, conversationName);
+            }
 
-           @Override
-           public void onError(ErrorInfo errorInfo) {
-               System.out.println("client11-" + errorInfo.getMessage());
-               CallbackListener.super.onError(errorInfo);
-           }
-       });
+            @Override
+            public void onError(ErrorInfo errorInfo) {
+                System.out.println("client11-" + errorInfo.getMessage());
+                createConversationResult.success("Error while creating conversation");
+                CallbackListener.super.onError(errorInfo);
+            }
+        });
+        return "";
     }
 
     public String addParticipant(String participantName,String conversationName){
@@ -160,12 +182,14 @@ public class MainActivity extends FlutterActivity {
                     @Override
                     public void onSuccess() {
                         System.out.println("added successfully");
+                        addParticipantResult.success("added successfully");
                         //List<Participant> participantList = conversation.getParticipantsList();
                         // System.out.println(participantList.toString());
                     }
 
                     @Override
                     public void onError(ErrorInfo errorInfo) {
+                        addParticipantResult.success("error while adding");
                         // List<Participant> participantList = conversation.getParticipantsList();
                         // System.out.println(participantList.toString());
                         System.out.println("client12-" + errorInfo.getStatus()+"-"+errorInfo.getCode()+"-"+errorInfo.getMessage()+"-"+errorInfo.getDescription()+"-"+errorInfo.getReason());
@@ -235,6 +259,7 @@ public class MainActivity extends FlutterActivity {
                             public void onSuccess(Object result) {
                                 System.out.println("senddd");
                                 receiveMessages();
+                                sendMessageResult.success("send");
 
                             }
 
@@ -347,9 +372,7 @@ public class MainActivity extends FlutterActivity {
     public List<Map<String, Object>> getConversationsList(){
         List<Conversation> conversationList = conversationClient.getMyConversations();
         System.out.println(conversationList.size()+"");
-        Map conversation = new HashMap();
         List<Map<String, Object>> list = new ArrayList<>();
-
         for (int i=0;i<conversationList.size();i++){
            // Map conversationMap = new HashMap<>();
             Map<String, Object> conversationMap = new HashMap<>();
@@ -363,20 +386,83 @@ public class MainActivity extends FlutterActivity {
     }
 
 
+    public List<Map<String, Object>> getAllMessages(String conversationName){
+        conversationClient.getConversation(conversationName,new CallbackListener<Conversation>(){
+
+            @Override
+            public void onSuccess(Conversation result) {
+                result.getLastMessages(100, new CallbackListener<List<Message>>() {
+
+                    @Override
+                    public void onSuccess(List<Message> messagesList) {
+                        List<Map<String, Object>> list = new ArrayList<>();
+                        for (int i=0;i<messagesList.size();i++){
+                            // Map conversationMap = new HashMap<>();
+                            Map<String, Object> messagesMap = new HashMap<>();
+                            messagesMap.put("sid",messagesList.get(i).getSid());
+                            messagesMap.put("author",messagesList.get(i).getAuthor());
+                            messagesMap.put("body",messagesList.get(i).getBody());
+                            list.add(messagesMap);
+
+                        }
+                        messageListResult.success(list);
+                    }
+
+                    @Override
+                    public void onError(ErrorInfo errorInfo) {
+                        // Error occurred while retrieving the messages
+                        System.out.println("Error retrieving messages: " + errorInfo.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onError(ErrorInfo errorInfo) {
+                CallbackListener.super.onError(errorInfo);
+            }
+        });
+        return null;
+    }
 
 
+    private static class MethodResultWrapper implements MethodChannel.Result {
+        private final MethodChannel.Result methodResult;
+        private boolean isResultSent = false;
 
+        MethodResultWrapper(MethodChannel.Result result) {
+            this.methodResult = result;
+            //handler = new Handler(Looper.getMainLooper());
+        }
 
+        @Override
+        public void success(final Object result) {
+            if (!isResultSent) {
+                methodResult.success(result);
+                isResultSent = true;
+            }
+        }
 
+        @Override
+        public void error(
+                @NonNull final String errorCode, final String errorMessage, final Object errorDetails) {
+            if (!isResultSent) {
+                methodResult.error(errorCode, errorMessage, errorDetails);
+                isResultSent = true;
+            }
+        }
 
-
-
-
-
-
-
-
+        @Override
+        public void notImplemented() {
+            if (!isResultSent) {
+                methodResult.notImplemented();
+                isResultSent = true;
+            }
+        }
+    }
 }
+
+
+
 
 
 

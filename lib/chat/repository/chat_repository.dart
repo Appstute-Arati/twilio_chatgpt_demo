@@ -1,15 +1,19 @@
 import 'package:flutter/services.dart';
 import 'package:twilio_chatgpt/chat/common/api/api_provider.dart';
+import 'package:twilio_chatgpt/chat/common/models/chat_model.dart';
 
 abstract class ChatRepository {
   init();
   Future<String> generateToken(credentials);
-  createConversation(conversationName, identity);
+  Future<String> createConversation(conversationName, identity);
   Future<String> joinConversation(conversationName);
   Future<String> sendMessage(enteredMessage, conversationName);
   receiveMessage();
   addParticipant(participantName, conversationName);
   Future<List> seeMyConversations();
+  Future<List> getMessages(conversationName);
+  Future<List<ChatModel>> sendMessageToChatGpt(
+      modelsProvider, chatProvider, typeMessage);
 }
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -17,15 +21,17 @@ class ChatRepositoryImpl implements ChatRepository {
   final ApiProvider _apiProvider = ApiProvider();
 
   @override
-  Future<void> createConversation(conversationName, identity) async {
+  Future<String> createConversation(conversationName, identity) async {
     String response;
     try {
       final String result = await platform.invokeMethod('createConversation',
           {"conversationName": conversationName, "identity": identity});
 
       response = result;
+      return response;
     } on PlatformException catch (e) {
       response = "Failed to get response";
+      return response;
     }
   }
 
@@ -133,5 +139,31 @@ class ChatRepositoryImpl implements ChatRepository {
       //response = "Failed to get response";
       return [];
     }
+  }
+
+  @override
+  Future<List> getMessages(conversationName) async {
+    List response;
+    try {
+      final List result = await platform
+          .invokeMethod('getMessages', {"conversationName": conversationName});
+      print("seeMyConversations");
+      print(result.length.toString());
+      response = result;
+
+      return response;
+    } on PlatformException catch (e) {
+      //response = "Failed to get response";
+      return [];
+    }
+  }
+
+  @override
+  Future<List<ChatModel>> sendMessageToChatGpt(
+      modelsProvider, chatProvider, typeMessage) async {
+    chatProvider.addUserMessage(msg: typeMessage);
+    await chatProvider.sendMessageAndGetAnswers(
+        msg: typeMessage, chosenModelId: modelsProvider.getCurrentModel);
+    return chatProvider.getChatList;
   }
 }

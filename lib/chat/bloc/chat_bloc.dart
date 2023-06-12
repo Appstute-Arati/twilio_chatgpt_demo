@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_events.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_states.dart';
+import 'package:twilio_chatgpt/chat/common/models/chat_model.dart';
 import 'package:twilio_chatgpt/chat/repository/chat_repository.dart';
 
 class ChatBloc extends Bloc<ChatEvents, ChatStates> {
@@ -21,9 +22,9 @@ class ChatBloc extends Bloc<ChatEvents, ChatStates> {
     on<CreateConversionEvent>((event, emit) async {
       emit(CreateConversionLoadingState());
       try {
-        Map result = chatRepository.createConversation(
+        String result = await chatRepository.createConversation(
             event.conversationName, event.identity);
-        emit(CreateConversionLoadedState(inputMap: result));
+        emit(CreateConversionLoadedState(conversationAddedStatus: result));
       } catch (e) {
         emit(CreateConversionErrorState(message: e.toString()));
       }
@@ -71,6 +72,31 @@ class ChatBloc extends Bloc<ChatEvents, ChatStates> {
         emit(AddParticipantLoadedState(addedStatus: result));
       } catch (e) {
         emit(AddParticipantErrorState(message: e.toString()));
+      }
+    });
+
+    on<ReceiveMessageEvent>((event, emit) async {
+      emit(ReceiveMessageLoadingState());
+      try {
+        List result = await chatRepository.getMessages(event.conversationName);
+        print("result");
+        print(result);
+        emit(ReceiveMessageLoadedState(messagesList: result));
+      } catch (e) {
+        emit(ReceiveMessageErrorState(message: e.toString()));
+      }
+    });
+
+    on<SendMessageToChatGptEvent>((event, emit) async {
+      emit(SendMessageToChatGptLoadingState());
+      try {
+        List<ChatModel> result = await chatRepository.sendMessageToChatGpt(
+            event.modelsProvider, event.chatProvider, event.typeMessage);
+        print("result");
+        print(result);
+        emit(SendMessageToChatGptLoadedState(chatGptListList: result));
+      } catch (e) {
+        emit(SendMessageToChatGptErrorState(message: e.toString()));
       }
     });
   }

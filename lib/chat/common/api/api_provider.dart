@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:twilio_chatgpt/chat/common/api/custom_exception.dart';
 import 'package:twilio_chatgpt/chat/common/api_constant.dart';
+import 'package:twilio_chatgpt/chat/common/api_consts.dart';
 import 'package:twilio_chatgpt/chat/common/models/chat_model.dart';
 import 'package:twilio_chatgpt/chat/common/models/models_model.dart';
 
@@ -122,8 +123,8 @@ class ApiProvider {
   static Future<List<ModelsModel>> getModels() async {
     try {
       var response = await http.get(
-        Uri.parse("${ApiConstants.baseUrl}/models"),
-        headers: {'Authorization': 'Bearer ${ApiConstants.apiKey}'},
+        Uri.parse("$BASE_URL/models"),
+        headers: {'Authorization': 'Bearer $API_KEY'},
       );
 
       Map jsonResponse = jsonDecode(response.body);
@@ -147,11 +148,12 @@ class ApiProvider {
   // Send Message using ChatGPT API
   static Future<List<ChatModel>> sendMessageGPT(
       {required String message, required String modelId}) async {
+    print("sendMessageGPT=" + message + "-" + modelId);
     try {
       var response = await http.post(
-        Uri.parse("${ApiConstants.baseUrl}/chat/completions"),
+        Uri.parse("$BASE_URL/chat/completions"),
         headers: {
-          'Authorization': 'Bearer ${ApiConstants.apiKey}',
+          'Authorization': 'Bearer $API_KEY',
           "Content-Type": "application/json"
         },
         body: jsonEncode(
@@ -167,15 +169,17 @@ class ApiProvider {
         ),
       );
 
-      // Map jsonResponse = jsonDecode(response.body);
-      Map jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      Map jsonResponse = jsonDecode(response.body);
+      print("print--" + jsonResponse.toString());
+      // Map jsonResponse = json.decode(utf8.decode(response.bodyBytes));
       if (jsonResponse['error'] != null) {
-        // print("jsonResponse['error'] ${jsonResponse['error']["message"]}");
+        print("jsonResponse['error'] ${jsonResponse['error']["message"]}");
         throw HttpException(jsonResponse['error']["message"]);
       }
       List<ChatModel> chatList = [];
       if (jsonResponse["choices"].length > 0) {
-        // log("jsonResponse[choices]text ${jsonResponse["choices"][0]["text"]}");
+        print(
+            "jsonResponse[choices]text ${jsonResponse["choices"][0]["message"]['content']}");
         chatList = List.generate(
           jsonResponse["choices"].length,
           (index) => ChatModel(
@@ -195,9 +199,9 @@ class ApiProvider {
       {required String message, required String modelId}) async {
     try {
       var response = await http.post(
-        Uri.parse("${ApiConstants.baseUrl}/completions"),
+        Uri.parse("$BASE_URL/completions"),
         headers: {
-          'Authorization': 'Bearer ${{ApiConstants.apiKey}}',
+          'Authorization': 'Bearer $API_KEY',
           "Content-Type": "application/json"
         },
         body: jsonEncode(

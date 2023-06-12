@@ -4,12 +4,15 @@ import 'package:twilio_chatgpt/chat/bloc/chat_bloc.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_events.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_states.dart';
 import 'package:twilio_chatgpt/chat/common/dialog_with_edittext.dart';
+import 'package:twilio_chatgpt/chat/common/toast_utility.dart';
 import 'package:twilio_chatgpt/chat/repository/chat_repository.dart';
 import 'package:twilio_chatgpt/chat/screens/chat_details_screen.dart';
 
 class ConversationListScreen extends StatefulWidget {
   final List conversationList;
-  const ConversationListScreen({Key? key, required this.conversationList})
+  final String? identity;
+  const ConversationListScreen(
+      {Key? key, required this.conversationList, required this.identity})
       : super(key: key);
 
   @override
@@ -94,6 +97,9 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
             ),
           );
         }, listener: (BuildContext context, ChatStates state) {
+          if (state is AddParticipantLoadedState) {
+            ToastUtility.showToastAtBottom(state.addedStatus);
+          }
           if (state is JoinConversionLoadedState) {
             Navigator.push(
               context,
@@ -102,8 +108,10 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
                     create: (context) =>
                         ChatBloc(chatRepository: ChatRepositoryImpl()),
                     child: ChatDetailsScreen(
-                        conversationName: state.result,
-                        conversationSid: state.result)),
+                      conversationName: state.result,
+                      conversationSid: state.result,
+                      identity: widget.identity,
+                    )),
               ),
             );
           }

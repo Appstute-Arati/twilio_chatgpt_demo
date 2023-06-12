@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_bloc.dart';
+import 'package:twilio_chatgpt/chat/common/providers/chats_provider.dart';
+import 'package:twilio_chatgpt/chat/common/providers/models_provider.dart';
 import 'package:twilio_chatgpt/chat/repository/chat_repository.dart';
 import 'package:twilio_chatgpt/chat/screens/home_screen.dart';
 
@@ -60,14 +63,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Twilio ChatGpt',
-      home: BlocProvider(
-        create: (context) => ChatBloc(
-          chatRepository: ChatRepositoryImpl(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ModelsProvider(),
         ),
-        child: const Homescreen(),
+        ChangeNotifierProvider(
+          create: (_) => ChatProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Twilio ChatGpt',
+        home: BlocProvider(
+          create: (context) => ChatBloc(
+            chatRepository: ChatRepositoryImpl(),
+          ),
+          child: const Homescreen(),
+        ),
       ),
     );
   }

@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:twilio_chatgpt/chat/common/providers/chats_provider.dart';
+import 'package:twilio_chatgpt/chat/common/providers/models_provider.dart';
 
 abstract class ChatEvents extends Equatable {}
 
@@ -43,8 +45,8 @@ class SendMessageEvent extends ChatEvents {
 
 //SendMessage
 class ReceiveMessageEvent extends ChatEvents {
-  final Map inputMap;
-  ReceiveMessageEvent({required this.inputMap});
+  final String? conversationName;
+  ReceiveMessageEvent({required this.conversationName});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -64,6 +66,19 @@ class AddParticipantEvent extends ChatEvents {
 //AddParticipant
 class SeeMyConversationsEvent extends ChatEvents {
   SeeMyConversationsEvent();
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+class SendMessageToChatGptEvent extends ChatEvents {
+  final ModelsProvider modelsProvider;
+  final ChatProvider chatProvider;
+  final String typeMessage;
+  SendMessageToChatGptEvent(
+      {required this.modelsProvider,
+      required this.chatProvider,
+      required this.typeMessage});
 
   @override
   List<Object?> get props => throw UnimplementedError();

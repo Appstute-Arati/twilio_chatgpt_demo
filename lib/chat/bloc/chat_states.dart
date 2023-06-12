@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:twilio_chatgpt/chat/common/models/chat_model.dart';
 
 abstract class ChatStates extends Equatable {}
 
@@ -39,8 +40,8 @@ class CreateConversionLoadingState extends ChatStates {
 
 // CreateConversionLoadedState
 class CreateConversionLoadedState extends ChatStates {
-  final Map inputMap;
-  CreateConversionLoadedState({required this.inputMap});
+  final String conversationAddedStatus;
+  CreateConversionLoadedState({required this.conversationAddedStatus});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -111,8 +112,8 @@ class ReceiveMessageLoadingState extends ChatStates {
 
 // ReceiveMessageLoadedState
 class ReceiveMessageLoadedState extends ChatStates {
-  final Map inputMap;
-  ReceiveMessageLoadedState({required this.inputMap});
+  final List messagesList;
+  ReceiveMessageLoadedState({required this.messagesList});
 
   @override
   List<Object?> get props => throw UnimplementedError();
@@ -170,6 +171,30 @@ class SeeMyConversationsLoadedState extends ChatStates {
 class SeeMyConversationsErrorState extends ChatStates {
   final String message;
   SeeMyConversationsErrorState({required this.message});
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+// SeeMyConversationsLoadingState
+class SendMessageToChatGptLoadingState extends ChatStates {
+  @override
+  List<Object?> get props => [];
+}
+
+// AddParticipantLoadedState
+class SendMessageToChatGptLoadedState extends ChatStates {
+  final List<ChatModel> chatGptListList;
+  SendMessageToChatGptLoadedState({required this.chatGptListList});
+
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+// SeeMyConversationsErrorState
+class SendMessageToChatGptErrorState extends ChatStates {
+  final String message;
+  SendMessageToChatGptErrorState({required this.message});
 
   @override
   List<Object?> get props => throw UnimplementedError();
