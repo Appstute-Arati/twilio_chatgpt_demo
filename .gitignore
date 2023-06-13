@@ -28,10 +28,11 @@ migrate_working_dir/
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
+.env
 .pub-cache/
 .pub/
 /build/
-.env
+
 
 
 # Symbolication related
@@ -44,3 +45,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+.env
+file.txt
+.env
