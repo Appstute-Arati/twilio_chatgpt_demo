@@ -86,6 +86,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                               message['attributes'] != "true")
                           ? true
                           : false;
+
                       return BubbleWidget(messageMap: message, isMe: isMe);
                     },
                     separatorBuilder: (BuildContext context, int index) =>
