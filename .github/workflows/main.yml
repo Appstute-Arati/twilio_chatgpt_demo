@@ -21,8 +21,8 @@ jobs:
       - run: flutter pub get
 
     # Create Bundle AAB Release
-      - name: Build app bundle release (AAB)
-        run: flutter build appbundle --release
+#      - name: Build app bundle release (AAB)
+#        run: flutter build appbundle --release
 
     # Create APK Release
       - name: Build apk release (APK)
@@ -45,11 +45,11 @@ jobs:
 #         artifacts: "build/app/outputs/bundle/release/app-release.aab"
 
     # upload app bundle
-      - name: Upload app bundle
-        uses: actions/upload-artifact@v2
-        with:
-         name: appbundle
-         path: build/app/outputs/bundle/release/app-release.aab
+#      - name: Upload app bundle
+#        uses: actions/upload-artifact@v2
+#        with:
+#         name: appbundle
+#         path: build/app/outputs/bundle/release/app-release.aab
 
     # upload release apk
       - name: Upload app release apk
