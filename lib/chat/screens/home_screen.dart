@@ -75,7 +75,7 @@ class _HomescreenState extends State<Homescreen> {
                       ),
                       textCapitalization: TextCapitalization.none,
                       hintText: "",
-                      maxLength: 10,
+                      maxLength: 100,
                       textInputFormatter: const [],
                       keyboardType: TextInputType.text,
                       width: MediaQuery.of(context).size.width * 0.90,
@@ -106,6 +106,7 @@ class _HomescreenState extends State<Homescreen> {
                   titleFontSize: 14.0,
                   titleFontWeight: FontWeight.w600,
                   onPressed: () {
+                    // ProgressBar.show(context);
                     identity == _phoneController.text;
                     chatBloc!.add(GenerateTokenEvent(credentials: {
                       "accountSid": "AC7dac7823ccc631c5121146db333132f4",
@@ -120,7 +121,9 @@ class _HomescreenState extends State<Homescreen> {
             ),
           );
         }, listener: (BuildContext context, ChatStates state) {
-          if (state is GenerateTokenLoadingState) {}
+          if (state is GenerateTokenLoadingState) {
+            // ProgressBar.show(context);
+          }
           if (state is GenerateTokenLoadedState) {
             Navigator.push(
               context,
@@ -131,6 +134,7 @@ class _HomescreenState extends State<Homescreen> {
                     child: ChatScreen(identity: _phoneController.text)),
               ),
             );
+            //  ProgressBar.dismiss(context);
           }
         }));
   }

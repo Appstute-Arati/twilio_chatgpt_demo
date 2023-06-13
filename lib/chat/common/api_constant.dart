@@ -3,6 +3,6 @@ class ApiConstants {
 
   static const String baseUrl = "https://api.openai.com/v1";
   static const String apiKey =
-      "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";
+      "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";
   static const String getModels = "/models";
 }

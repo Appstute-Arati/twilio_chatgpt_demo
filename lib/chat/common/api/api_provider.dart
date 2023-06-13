@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:twilio_chatgpt/chat/common/api/custom_exception.dart';
 import 'package:twilio_chatgpt/chat/common/api_constant.dart';
-import 'package:twilio_chatgpt/chat/common/api_consts.dart';
 import 'package:twilio_chatgpt/chat/common/models/chat_model.dart';
 import 'package:twilio_chatgpt/chat/common/models/models_model.dart';
 
@@ -123,8 +122,8 @@ class ApiProvider {
   static Future<List<ModelsModel>> getModels() async {
     try {
       var response = await http.get(
-        Uri.parse("$BASE_URL/models"),
-        headers: {'Authorization': 'Bearer $API_KEY'},
+        Uri.parse("${ApiConstants.baseUrl}/models"),
+        headers: {'Authorization': 'Bearer ${ApiConstants.apiKey}'},
       );
 
       Map jsonResponse = jsonDecode(response.body);
@@ -151,9 +150,9 @@ class ApiProvider {
     print("sendMessageGPT=$message-$modelId");
     try {
       var response = await http.post(
-        Uri.parse("$BASE_URL/chat/completions"),
+        Uri.parse("${ApiConstants.baseUrl}/chat/completions"),
         headers: {
-          'Authorization': 'Bearer $API_KEY',
+          'Authorization': 'Bearer ${ApiConstants.apiKey}',
           "Content-Type": "application/json"
         },
         body: jsonEncode(
@@ -198,9 +197,9 @@ class ApiProvider {
       {required String message, required String modelId}) async {
     try {
       var response = await http.post(
-        Uri.parse("$BASE_URL/completions"),
+        Uri.parse("${ApiConstants.baseUrl}/completions"),
         headers: {
-          'Authorization': 'Bearer $API_KEY',
+          'Authorization': 'Bearer ${ApiConstants.apiKey}',
           "Content-Type": "application/json"
         },
         body: jsonEncode(

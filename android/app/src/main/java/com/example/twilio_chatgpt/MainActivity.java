@@ -49,6 +49,7 @@ public class MainActivity extends FlutterActivity {
     private MethodChannel.Result sendMessageResult;
     private MethodChannel.Result addParticipantResult;
     private MethodChannel.Result createConversationResult;
+    private MethodChannel.Result authenticationResult;
 
 
 
@@ -65,10 +66,11 @@ public class MainActivity extends FlutterActivity {
 
                           System.out.println("MethodChannel");
                           if(Objects.equals(call.method,"generateToken")){
+                              authenticationResult = new MethodResultWrapper(result);
                               String accessToken = generateAccessToken(call.argument("accountSid"),call.argument("apiKey"),call.argument("apiSecret"),call.argument("identity"));
                               System.out.println("accessToken-"+accessToken);
                               init();
-                              result.success(accessToken);
+                              //result.success(accessToken);
                           }
                           if(Objects.equals(call.method, "createConversation")){
                               createConversationResult = new MethodResultWrapper(result);
@@ -137,13 +139,15 @@ public class MainActivity extends FlutterActivity {
                 System.out.println("client11-" + client.getMyIdentity().toString());
                 conversationClient = client;
               //  createConversation("");
-
+                authenticationResult.success("Logged In");
 
             }
 
             @Override
             public void onError(ErrorInfo errorInfo) {
                 System.out.println("client12-" + errorInfo.getStatus()+"-"+errorInfo.getCode()+"-"+errorInfo.getMessage()+"-"+errorInfo.getDescription()+"-"+errorInfo.getReason());
+                authenticationResult.success("Logged In Fail");
+
             }
 
         });
