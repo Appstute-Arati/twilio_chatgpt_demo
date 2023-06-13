@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:twilio_chatgpt/chat/common/api/custom_exception.dart';
 import 'package:twilio_chatgpt/chat/common/api_constant.dart';
@@ -120,10 +121,11 @@ class ApiProvider {
   }
 
   static Future<List<ModelsModel>> getModels() async {
+    String? apiKey = await getEnvironmentKey();
     try {
       var response = await http.get(
         Uri.parse("${ApiConstants.baseUrl}/models"),
-        headers: {'Authorization': 'Bearer ${ApiConstants.apiKey}'},
+        headers: {'Authorization': 'Bearer $apiKey'},
       );
 
       Map jsonResponse = jsonDecode(response.body);
@@ -147,12 +149,13 @@ class ApiProvider {
   // Send Message using ChatGPT API
   static Future<List<ChatModel>> sendMessageGPT(
       {required String message, required String modelId}) async {
+    String? apiKey = await getEnvironmentKey();
     print("sendMessageGPT=$message-$modelId");
     try {
       var response = await http.post(
         Uri.parse("${ApiConstants.baseUrl}/chat/completions"),
         headers: {
-          'Authorization': 'Bearer ${ApiConstants.apiKey}',
+          'Authorization': 'Bearer $apiKey',
           "Content-Type": "application/json"
         },
         body: jsonEncode(
@@ -195,11 +198,12 @@ class ApiProvider {
   // Send Message fct
   static Future<List<ChatModel>> sendMessage(
       {required String message, required String modelId}) async {
+    String? apiKey = await getEnvironmentKey();
     try {
       var response = await http.post(
         Uri.parse("${ApiConstants.baseUrl}/completions"),
         headers: {
-          'Authorization': 'Bearer ${ApiConstants.apiKey}',
+          'Authorization': 'Bearer $apiKey',
           "Content-Type": "application/json"
         },
         body: jsonEncode(
@@ -233,5 +237,31 @@ class ApiProvider {
     } catch (error) {
       rethrow;
     }
+  }
+
+  static Future<String?> getEnvironmentKey() async {
+    final env = await parseStringToMap(assetsFileName: '.env');
+    print("env");
+    print(env['API_KEY']);
+    return env['API_KEY'];
+  }
+
+  static Future<Map<String, String>> parseStringToMap(
+      {String assetsFileName = '.env'}) async {
+    final lines = await rootBundle.loadString(assetsFileName);
+    Map<String, String> environment = {};
+    for (String line in lines.split('\n')) {
+      line = line.trim();
+      if (line.contains('=') //Set Key Value Pairs on lines separated by =
+          &&
+          !line.startsWith(RegExp(r'=|#'))) {
+        //No need to add emty keys and remove comments
+        List<String> contents = line.split('=');
+        environment[contents[0]] = contents.sublist(1).join('=');
+      }
+    }
+    print("environment.toString()");
+    print(environment.toString());
+    return environment;
   }
 }
