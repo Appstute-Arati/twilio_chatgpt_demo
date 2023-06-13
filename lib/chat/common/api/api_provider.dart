@@ -172,8 +172,9 @@ class ApiProvider {
       Map jsonResponse = jsonDecode(response.body);
 
       // Map jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      print("jsonResponse $jsonResponse");
       if (jsonResponse['error'] != null) {
-        //print("jsonResponse['error'] ${jsonResponse['error']["message"]}");
+        print("jsonResponse['error'] ${jsonResponse['error']["message"]}");
         throw HttpException(jsonResponse['error']["message"]);
       }
       List<ChatModel> chatList = [];

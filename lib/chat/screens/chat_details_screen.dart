@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_bloc.dart';
@@ -34,6 +35,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
   String typeMessages = "";
 
   List allMessageList = [];
+  final ScrollController _controller = ScrollController(initialScrollOffset: 0);
 
   @override
   void initState() {
@@ -43,6 +45,13 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         .add(ReceiveMessageEvent(conversationName: widget.conversationSid));
     //print("identity");
     // print(widget.identity);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _controller.animateTo(
+        0.0,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    });
   }
 
   @override
@@ -64,8 +73,9 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                 children: [
                   Expanded(
                       child: ListView.separated(
+                    controller: _controller,
                     itemCount: allMessageList.length,
-                    //reverse: true,
+                    reverse: true,
                     shrinkWrap: true,
                     physics: const ClampingScrollPhysics(),
                     itemBuilder: (context, index) {
@@ -86,6 +96,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                     msgController: msgController,
                     haveValidation: true,
                     onSend: (typeMessage) {
+                      print("typeMessage-" + typeMessage.toString());
                       List<String>? substrings = typeMessage.split(",");
                       if (substrings[0].contains("ChatGPT")) {
                         chatBloc!.add(SendMessageEvent(
@@ -111,6 +122,10 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         }, listener: (BuildContext context, ChatStates state) {
           if (state is ReceiveMessageLoadedState) {
             allMessageList = state.messagesList;
+            allMessageList
+                .sort((a, b) => (b['dateCreated']).compareTo(a['dateCreated']));
+
+            /// sort List<Map<String,dynamic>>
           }
           if (state is SendMessageToChatGptLoadingState) {
             // ProgressBar.show(context);
@@ -126,9 +141,9 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
           if (state is SendMessageToChatGptLoadedState) {
             //ProgressBar.dismiss(context);
             //print("state.chatGptListList[0].msg");
-            // print(state.chatGptListList[1].msg);
+            // print(state.chatGptListList[0].msg);
             chatBloc!.add(SendMessageEvent(
-                enteredMessage: state.chatGptListList[1].msg,
+                enteredMessage: state.chatGptListList[0].msg,
                 conversationName: widget.conversationSid,
                 isFromChatGpt: true));
           }

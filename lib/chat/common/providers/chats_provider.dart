@@ -17,6 +17,7 @@ class ChatProvider with ChangeNotifier {
   Future<void> sendMessageAndGetAnswers(
       {required String msg, required String chosenModelId}) async {
     //print("chosenModelId-${chosenModelId}msg-$msg");
+    chatList.clear();
     if (chosenModelId.toLowerCase().startsWith("gpt")) {
       chatList.addAll(await ApiProvider.sendMessageGPT(
         message: msg,
