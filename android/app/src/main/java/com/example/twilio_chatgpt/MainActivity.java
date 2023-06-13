@@ -158,14 +158,14 @@ public class MainActivity extends FlutterActivity {
             public void onSuccess(Conversation result) {
                 System.out.println("client11-" + result.getSid());
                 conversation = result;
-                createConversationResult.success("Created Conversation Successgully");
+                createConversationResult.success("Created Conversation Successfully");
                 String added = addParticipant(identity, conversationName);
             }
 
             @Override
             public void onError(ErrorInfo errorInfo) {
                 System.out.println("client11-" + errorInfo.getMessage());
-                createConversationResult.success("Error while creating conversation");
+                createConversationResult.success("Error While Creating Conversation");
                 CallbackListener.super.onError(errorInfo);
             }
         });
@@ -183,14 +183,14 @@ public class MainActivity extends FlutterActivity {
                     @Override
                     public void onSuccess() {
                         System.out.println("added successfully");
-                        addParticipantResult.success("added successfully");
+                        addParticipantResult.success("Added Successfully");
                         //List<Participant> participantList = conversation.getParticipantsList();
                         // System.out.println(participantList.toString());
                     }
 
                     @Override
                     public void onError(ErrorInfo errorInfo) {
-                        addParticipantResult.success("error while adding");
+                        addParticipantResult.success("Error While Adding");
                         // List<Participant> participantList = conversation.getParticipantsList();
                         // System.out.println(participantList.toString());
                         System.out.println("client12-" + errorInfo.getStatus()+"-"+errorInfo.getCode()+"-"+errorInfo.getMessage()+"-"+errorInfo.getDescription()+"-"+errorInfo.getReason());

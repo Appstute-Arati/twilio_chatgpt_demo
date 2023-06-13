@@ -5,6 +5,7 @@ import 'package:twilio_chatgpt/chat/bloc/chat_events.dart';
 import 'package:twilio_chatgpt/chat/bloc/chat_states.dart';
 import 'package:twilio_chatgpt/chat/common/dialog_with_edittext.dart';
 import 'package:twilio_chatgpt/chat/common/toast_utility.dart';
+import 'package:twilio_chatgpt/chat/common/widgets/common_text_button_widget.dart';
 import 'package:twilio_chatgpt/chat/repository/chat_repository.dart';
 import 'package:twilio_chatgpt/chat/screens/chat_details_screen.dart';
 import 'package:twilio_chatgpt/chat/screens/conversation_list_screen.dart';
@@ -50,23 +51,48 @@ class _ChatScreenState extends State<ChatScreen> {
                 //       }));
                 //     },
                 //     child: const Text("Generate Token")),
-                ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return DialogWithEditText(
-                            onPressed: (enteredText) {
-                              chatBloc!.add(CreateConversionEvent(
-                                  conversationName: enteredText,
-                                  identity: widget.identity));
-                              Navigator.of(context).pop();
-                            },
-                          );
-                        },
-                      );
-                    },
-                    child: const Text("Create Conversation")),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.10,
+                ),
+                CommonTextButtonWidget(
+                  isIcon: false,
+                  height: MediaQuery.of(context).size.height * 0.06,
+                  width: MediaQuery.of(context).size.width * 0.82,
+                  title: "Create Conversation",
+                  titleFontSize: 14.0,
+                  titleFontWeight: FontWeight.w600,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return DialogWithEditText(
+                          onPressed: (enteredText) {
+                            chatBloc!.add(CreateConversionEvent(
+                                conversationName: enteredText,
+                                identity: widget.identity));
+                            Navigator.of(context).pop();
+                          },
+                          dialogTitle: "Create Conversation",
+                        );
+                      },
+                    );
+                  },
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.030,
+                ),
+                CommonTextButtonWidget(
+                  isIcon: false,
+                  height: MediaQuery.of(context).size.height * 0.06,
+                  width: MediaQuery.of(context).size.width * 0.82,
+                  title: "See My Conversations",
+                  titleFontSize: 14.0,
+                  titleFontWeight: FontWeight.w600,
+                  onPressed: () {
+                    chatBloc!.add(SeeMyConversationsEvent());
+                  },
+                )
+
                 // ElevatedButton(
                 //     onPressed: () {
                 //       showDialog(
@@ -101,11 +127,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 //       );
                 //     },
                 //     child: const Text("Add Participant")),
-                ElevatedButton(
-                    onPressed: () {
-                      chatBloc!.add(SeeMyConversationsEvent());
-                    },
-                    child: const Text("See My Conversations"))
               ],
             ),
           );

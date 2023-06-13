@@ -41,8 +41,8 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     chatBloc = BlocProvider.of<ChatBloc>(context);
     chatBloc!
         .add(ReceiveMessageEvent(conversationName: widget.conversationSid));
-    print("identity");
-    print(widget.identity);
+    //print("identity");
+    // print(widget.identity);
   }
 
   @override
@@ -51,7 +51,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     final chatProvider = Provider.of<ChatProvider>(context);
     return Scaffold(
         appBar: AppBar(
-          title: Text("Conversation Details"),
+          title: const Text("Conversation Details"),
         ),
         backgroundColor: Colors.white,
         body: BlocConsumer<ChatBloc, ChatStates>(
@@ -79,7 +79,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                       return BubbleWidget(messageMap: message, isMe: isMe);
                     },
                     separatorBuilder: (BuildContext context, int index) =>
-                        Padding(padding: EdgeInsets.only(bottom: 4)),
+                        const Padding(padding: EdgeInsets.only(bottom: 4)),
                   )),
                   ChatTextWidget(
                     hintText: "Type here..",
@@ -95,7 +95,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                         chatBloc!.add(SendMessageToChatGptEvent(
                             modelsProvider: modelsProvider,
                             chatProvider: chatProvider,
-                            typeMessage: typeMessages));
+                            typeMessage: typeMessage));
                       } else {
                         chatBloc!.add(SendMessageEvent(
                             enteredMessage: typeMessage,
@@ -125,8 +125,8 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
           }
           if (state is SendMessageToChatGptLoadedState) {
             //ProgressBar.dismiss(context);
-            print("state.chatGptListList[0].msg");
-            print(state.chatGptListList[1].msg);
+            //print("state.chatGptListList[0].msg");
+            // print(state.chatGptListList[1].msg);
             chatBloc!.add(SendMessageEvent(
                 enteredMessage: state.chatGptListList[1].msg,
                 conversationName: widget.conversationSid,

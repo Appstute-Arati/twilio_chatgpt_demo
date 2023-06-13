@@ -1,9 +1,8 @@
 import 'package:flutter/services.dart';
-import 'package:twilio_chatgpt/chat/common/api/api_provider.dart';
 import 'package:twilio_chatgpt/chat/common/models/chat_model.dart';
 
 abstract class ChatRepository {
-  init();
+  Future<String> init();
   Future<String> generateToken(credentials);
   Future<String> createConversation(conversationName, identity);
   Future<String> joinConversation(conversationName);
@@ -18,7 +17,7 @@ abstract class ChatRepository {
 
 class ChatRepositoryImpl implements ChatRepository {
   final platform = const MethodChannel('twilio_chatgpt/twilio_sdk_connection');
-  final ApiProvider _apiProvider = ApiProvider();
+  //final ApiProvider _apiProvider = ApiProvider();
 
   @override
   Future<String> createConversation(conversationName, identity) async {
@@ -30,7 +29,7 @@ class ChatRepositoryImpl implements ChatRepository {
       response = result;
       return response;
     } on PlatformException catch (e) {
-      response = "Failed to get response";
+      response = e.message.toString();
       return response;
     }
   }
@@ -46,24 +45,25 @@ class ChatRepositoryImpl implements ChatRepository {
         "identity": credentials['identity']
       });
       response = result;
-      print("result--$response");
+      //print("result--$response");
       return response;
     } on PlatformException catch (e) {
-      response = "Failed to get response";
+      response = e.message.toString();
       return response;
     }
   }
 
   @override
-  Future<void> init() async {
+  Future<String> init() async {
     String response;
     try {
       final String result =
           await platform.invokeMethod('init', {"mobileNumber": ""});
       response = result;
     } on PlatformException catch (e) {
-      response = "Failed to get response";
+      response = e.message.toString();
     }
+    return response;
   }
 
   @override
@@ -75,7 +75,7 @@ class ChatRepositoryImpl implements ChatRepository {
       response = result;
       return response;
     } on PlatformException catch (e) {
-      response = "Failed to get response";
+      response = e.message.toString();
       return response;
     }
   }
@@ -88,7 +88,7 @@ class ChatRepositoryImpl implements ChatRepository {
           await platform.invokeMethod('receiveMessage', {"mobileNumber": ""});
       response = result;
     } on PlatformException catch (e) {
-      response = "Failed to get response";
+      response = e.message.toString();
     }
   }
 
@@ -105,7 +105,7 @@ class ChatRepositoryImpl implements ChatRepository {
       response = result;
       return response;
     } on PlatformException catch (e) {
-      response = "Failed to get response";
+      response = e.message.toString();
       return response;
     }
   }
@@ -121,7 +121,7 @@ class ChatRepositoryImpl implements ChatRepository {
       response = result;
       return response;
     } on PlatformException catch (e) {
-      response = "Failed to get response";
+      response = e.message.toString();
       return response;
     }
   }
@@ -132,12 +132,13 @@ class ChatRepositoryImpl implements ChatRepository {
     try {
       final List result = await platform
           .invokeMethod('seeMyConversations', {"mobileNumber": ""});
-      print("seeMyConversations");
-      print(result.length.toString());
+      //print("seeMyConversations");
+      // print(result.length.toString());
       response = result;
 
       return response;
     } on PlatformException catch (e) {
+      String message = e.message.toString();
       //response = "Failed to get response";
       return [];
     }
@@ -149,12 +150,13 @@ class ChatRepositoryImpl implements ChatRepository {
     try {
       final List result = await platform
           .invokeMethod('getMessages', {"conversationName": conversationName});
-      print("seeMyConversations");
-      print(result.length.toString());
+      //print("seeMyConversations");
+      // print(result.length.toString());
       response = result;
 
       return response;
     } on PlatformException catch (e) {
+      String message = e.message.toString();
       //response = "Failed to get response";
       return [];
     }

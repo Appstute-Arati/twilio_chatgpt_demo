@@ -24,9 +24,9 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
 
   String? identity;
 
-  var conversationName;
+  var conversationName = "";
 
-  var conversationSid;
+  var conversationSid = "";
 
   @override
   void initState() {
@@ -50,12 +50,12 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
                 return InkWell(
                   onTap: () {},
                   child: Padding(
-                    padding: EdgeInsets.all(0.5),
+                    padding: const EdgeInsets.all(0.5),
                     child: Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      color: Color(0xffADB6D8),
+                      color: const Color(0xffADB6D8),
                       elevation: 10,
                       child: ListTile(
                         title: Text(
@@ -89,6 +89,7 @@ class _ConversationListScreenState extends State<ConversationListScreen> {
                                                       ["sid"]));
                                           Navigator.of(context).pop();
                                         },
+                                        dialogTitle: "Add Participant",
                                       );
                                     },
                                   );

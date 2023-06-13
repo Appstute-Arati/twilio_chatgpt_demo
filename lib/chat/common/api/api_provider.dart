@@ -148,7 +148,7 @@ class ApiProvider {
   // Send Message using ChatGPT API
   static Future<List<ChatModel>> sendMessageGPT(
       {required String message, required String modelId}) async {
-    print("sendMessageGPT=" + message + "-" + modelId);
+    print("sendMessageGPT=$message-$modelId");
     try {
       var response = await http.post(
         Uri.parse("$BASE_URL/chat/completions"),
@@ -170,16 +170,14 @@ class ApiProvider {
       );
 
       Map jsonResponse = jsonDecode(response.body);
-      print("print--" + jsonResponse.toString());
+
       // Map jsonResponse = json.decode(utf8.decode(response.bodyBytes));
       if (jsonResponse['error'] != null) {
-        print("jsonResponse['error'] ${jsonResponse['error']["message"]}");
+        //print("jsonResponse['error'] ${jsonResponse['error']["message"]}");
         throw HttpException(jsonResponse['error']["message"]);
       }
       List<ChatModel> chatList = [];
       if (jsonResponse["choices"].length > 0) {
-        print(
-            "jsonResponse[choices]text ${jsonResponse["choices"][0]["message"]['content']}");
         chatList = List.generate(
           jsonResponse["choices"].length,
           (index) => ChatModel(

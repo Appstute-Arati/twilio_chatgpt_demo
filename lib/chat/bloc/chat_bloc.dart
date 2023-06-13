@@ -34,8 +34,6 @@ class ChatBloc extends Bloc<ChatEvents, ChatStates> {
       emit(SeeMyConversationsLoadingState());
       try {
         List result = await chatRepository.seeMyConversations();
-        print("result");
-        print(result);
         emit(SeeMyConversationsLoadedState(conversationList: result));
       } catch (e) {
         emit(CreateConversionErrorState(message: e.toString()));
@@ -79,8 +77,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatStates> {
       emit(ReceiveMessageLoadingState());
       try {
         List result = await chatRepository.getMessages(event.conversationName);
-        print("result");
-        print(result);
+
         emit(ReceiveMessageLoadedState(messagesList: result));
       } catch (e) {
         emit(ReceiveMessageErrorState(message: e.toString()));
@@ -92,8 +89,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatStates> {
       try {
         List<ChatModel> result = await chatRepository.sendMessageToChatGpt(
             event.modelsProvider, event.chatProvider, event.typeMessage);
-        print("result");
-        print(result);
+
         emit(SendMessageToChatGptLoadedState(chatGptListList: result));
       } catch (e) {
         emit(SendMessageToChatGptErrorState(message: e.toString()));
